@@ -1,0 +1,39 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/PlayerController.h"
+#include "SGPlayerController.generated.h"
+
+// 更新状态
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPawnChanged, APawn*, NewPawn);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStateChanged, APlayerState*, NewPlayerState);
+
+UCLASS()
+class SHOOTINGGAMEDEMO_API ASGPlayerController : public APlayerController
+{
+	GENERATED_BODY()
+
+protected:
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPawnChanged OnPawnChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerStateChanged OnPlayerStateReceived;  // 解决客户端在加入游戏时无法尽早获得PlayerState的问题
+
+protected:
+
+	// 重写 - 玩家进入游戏或玩家死亡复活时调用
+	virtual void SetPawn(APawn* InPawn) override;
+
+	// Controller开始游戏时调用，用于初始化UI，代替在Begin play中初始化UI
+	// 确保玩家状态设置早于UI
+	virtual void BeginPlayingState() override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BlueprintBeginPlayingState();
+
+	void OnRep_PlayerState() override;
+};
