@@ -66,7 +66,7 @@ void USGWeaponComponent::ReplaceClipCheck(ASGCharacterBase* InstigatorCharacter)
 	}
 	if (CurrentWeapon->MaxPrimaryClipAmmo <= 0)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Clip is empty!"))
+		UE_LOG(LogTemp, Log, TEXT("Clip is empty!"));
 		UGameplayStatics::PlaySound2D(GetWorld(), CurrentWeapon->EmptyClipSound);
 		return;
 	} else if (CurrentWeapon->PrimaryClipAmmo == CurrentWeapon->ClipLoad)
@@ -156,11 +156,6 @@ void USGWeaponComponent::DiscardAllWeapons(ASGCharacterBase* InstigatorCharacter
 
 void USGWeaponComponent::StartFireAction(ASGCharacterBase* InstigatorCharacter)
 {
-	if (!(InstigatorCharacter->bEquipWeapon) || (CurrentWeapon == nullptr))
-	{
-		UE_LOG(LogTemp, Log, TEXT("Without weapon, can not fire."));
-		return;
-	}
 	if (CurrentWeapon->PrimaryClipAmmo <= 0)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Firearm's clip is empty, please replace clip!"));
@@ -169,7 +164,6 @@ void USGWeaponComponent::StartFireAction(ASGCharacterBase* InstigatorCharacter)
 	const float ShootingTime = CurrentWeapon->ShootingSpeed;
 	if (CurrentWeapon->ShootingType == EShootingType::Running)
 	{
-		//FTimerHandle TimerHandle_FireDelay;  // 局部
 		FTimerDelegate Delegate;
 		Delegate.BindUFunction(this, "StartFireDelay_Elapsed", InstigatorCharacter);
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle_FireDelay, Delegate, ShootingTime, true);
@@ -258,7 +252,7 @@ void USGWeaponComponent::StartFireDelay_Elapsed(ASGCharacterBase* InstigatorChar
 		FRotator ProjRotation = FRotationMatrix::MakeFromX(TraceEnd - MuzzleLocation).Rotator();
 
 		FTransform SpawnTM = FTransform(ProjRotation, MuzzleLocation);
-		//DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Green, false, 2.0f, 0, 0.5f);
+
 		GetWorld()->SpawnActor<AActor>(CurrentWeapon->AmmoType, SpawnTM, SpawnParams);
 	}
 	else

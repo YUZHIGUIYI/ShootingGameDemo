@@ -34,7 +34,7 @@ ASGAmmo::ASGAmmo()
 	MoveComp->InitialSpeed = InitialSpeed;
 	MoveComp->MaxSpeed = MaxSpeed;
 
-	MoveComp->OnProjectileStop.AddDynamic(this, &ASGAmmo::OnProjectileStop);
+	
 
 	DirectDamage = 45.0f;
 
@@ -54,6 +54,8 @@ void ASGAmmo::BeginPlay()
 void ASGAmmo::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	MoveComp->OnProjectileStop.AddDynamic(this, &ASGAmmo::OnProjectileStop);
 }
 
 void ASGAmmo::OnProjectileStop(const FHitResult& ImpactResult)
@@ -119,15 +121,17 @@ void ASGAmmo::PlaySoundAtLocation(const FHitResult& ImpactResult)
 
 void ASGAmmo::SpawnDecalAttached(const FHitResult& ImpactResult)
 {
-	if (ensure(EffectInfo.DamageMaterial))
+	if (EffectInfo.DamageDecal == nullptr)
 	{
-		float Roll = FMath::RandRange(-90, 90);
-		FRotator NormalRotator = ImpactResult.Normal.Rotation();  // @Fixme
-		FRotator DecalRotation = FRotator(NormalRotator.Pitch, NormalRotator.Yaw, Roll);  // @Fixme
-		FVector DecalSize = FVector(EffectInfo.DamageRegion, EffectInfo.DamageRegion, EffectInfo.DamageRegion);
-		UGameplayStatics::SpawnDecalAttached(EffectInfo.DamageMaterial, DecalSize, ImpactResult.GetComponent(), ImpactResult.BoneName,
-			ImpactResult.ImpactPoint, DecalRotation, EAttachLocation::KeepWorldPosition, 2.0f);
+		return;
 	}
+	// 使用霰弹枪时有几率出现Ensure condition failed现象
+	float Roll = FMath::RandRange(-90, 90);
+	FRotator NormalRotator = ImpactResult.Normal.Rotation();  // @Fixme
+	FRotator DecalRotation = FRotator(NormalRotator.Pitch, NormalRotator.Yaw, Roll);  // @Fixme
+	FVector DecalSize = FVector(EffectInfo.DamageRegion, EffectInfo.DamageRegion, EffectInfo.DamageRegion);
+	UGameplayStatics::SpawnDecalAttached(EffectInfo.DamageDecal, DecalSize, ImpactResult.GetComponent(), ImpactResult.BoneName,
+		ImpactResult.ImpactPoint, DecalRotation, EAttachLocation::KeepWorldPosition, 2.0f);
 }
 // 弃用
 void ASGAmmo::PlayCameraShake()

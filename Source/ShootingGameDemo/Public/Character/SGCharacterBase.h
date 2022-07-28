@@ -63,10 +63,10 @@ public:
 	UAnimMontage* EquipOrMountMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AnimMontage")
-	UAnimMontage* FireMontageNormal;
+	UAnimMontage* FireMontageNormal;  // 弃用，转移至SGAction_Fire
 
 	UPROPERTY(EditDefaultsOnly, Category = "AnimMontage")
-	UAnimMontage* FireMontageShotgun;
+	UAnimMontage* FireMontageShotgun;  // 弃用，转移至SGAction_Fire
 
 	UPROPERTY(EditDefaultsOnly, Category = "AnimMontage")
 	UAnimMontage* ReplaceClipMontage;

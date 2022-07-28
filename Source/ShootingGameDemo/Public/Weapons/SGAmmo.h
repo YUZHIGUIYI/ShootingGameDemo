@@ -34,6 +34,9 @@ struct FEffectInfo
 	UMaterial* DamageMaterial;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseEffects")
+	UMaterialInstance* DamageDecal;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseEffects")
 	float ExistTime;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseEffects")
@@ -100,7 +103,7 @@ protected:
 
 protected:
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	virtual void OnProjectileStop(const FHitResult& ImpactResult);
 
 	virtual void SpawnEmitterAtLocation(const FHitResult& ImpactResult);

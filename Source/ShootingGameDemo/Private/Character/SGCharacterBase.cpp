@@ -224,17 +224,25 @@ void ASGCharacterBase::PrimaryInteract()
 
 void ASGCharacterBase::PrimaryFire()
 {
-	if (WeaponComp)
+	/*if (WeaponComp->CurrentWeapon != nullptr && bEquipWeapon)
 	{
 		WeaponComp->StartFireAction(this);
+	}*/
+	if (WeaponComp->CurrentWeapon != nullptr && bEquipWeapon)
+	{
+		ActionComp->StartActionByName(this, "Fire");
 	}
 }
 
 void ASGCharacterBase::StopFire()
 {
-	if (WeaponComp && WeaponComp->CurrentWeapon != nullptr)
+	/*if (bEquipWeapon && WeaponComp->CurrentWeapon != nullptr)
 	{
 		WeaponComp->StopFireAction(this);
+	}*/
+	if (WeaponComp->CurrentWeapon != nullptr && bEquipWeapon)
+	{
+		ActionComp->StopActionByName(this, "Fire");
 	}
 }
 
@@ -309,15 +317,19 @@ void ASGCharacterBase::SwitchWeapon()
 
 void ASGCharacterBase::ReplaceClipAction()
 {
-	if (WeaponComp)
+	/*if (WeaponComp->CurrentWeapon != nullptr && bEquipWeapon)
 	{
 		WeaponComp->ReplaceClipCheck(this);
+	}*/
+	if (WeaponComp->CurrentWeapon != nullptr && bEquipWeapon)
+	{
+		ActionComp->StartActionByName(this, "Reload");
 	}
 }
 
 void ASGCharacterBase::DiscardAction()
 {
-	if (WeaponComp)
+	if (WeaponComp->CurrentWeapon != nullptr && bEquipWeapon)
 	{
 		WeaponComp->DiscardWeapon(this);
 	}
