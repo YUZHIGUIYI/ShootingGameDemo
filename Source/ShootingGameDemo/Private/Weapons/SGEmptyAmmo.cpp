@@ -20,8 +20,6 @@ ASGEmptyAmmo::ASGEmptyAmmo()
 	StaticMeshComp->SetNotifyRigidBodyCollision(true);
 	StaticMeshComp->BodyInstance.SetInstanceNotifyRBCollision(true);
 
-	StaticMeshComp->OnComponentHit.AddDynamic(this, &ASGEmptyAmmo::OnComponentHitHappened);
-
 	MassInKg = 0.2f;
 	ImpulseParm = 50.0f;
 	
@@ -37,23 +35,25 @@ void ASGEmptyAmmo::BeginPlay()
 	SetLifeSpan(3.0f);
 }
 
+void ASGEmptyAmmo::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	// 如果蓝图是在绑定OnComponentHit之前创建的（或在使用热重载时），则构造函数可能无法绑定OnComponentHit
+	// PostInitializeComponents绑定更为一致，也是绑定任何事件的首选方式
+	StaticMeshComp->OnComponentHit.AddDynamic(this, &ASGEmptyAmmo::OnComponentHitHappened);
+}
+
 void ASGEmptyAmmo::OnComponentHitHappened(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+                                          UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (Hit.bBlockingHit)
 	{
 		FVector ComponentVelocity = HitComponent->GetComponentVelocity();
 		float ComponentVelocityLength = ComponentVelocity.Size();
-		if (ComponentVelocityLength > 100.0f)
+		if (ComponentVelocityLength > 120.0f)
 		{
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), LangdingSound, Hit.ImpactPoint, FRotator::ZeroRotator);
 		}
 	}
 }
-
-void ASGEmptyAmmo::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-

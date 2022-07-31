@@ -104,7 +104,7 @@ protected:
 protected:
 
 	UFUNCTION()
-	virtual void OnProjectileStop(const FHitResult& ImpactResult);
+	virtual void OnAmmoStop(const FHitResult& ImpactResult);
 
 	virtual void SpawnEmitterAtLocation(const FHitResult& ImpactResult);
 

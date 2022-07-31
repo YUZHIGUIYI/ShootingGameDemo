@@ -25,16 +25,6 @@ ASGWeaponBase::ASGWeaponBase()
 	MuzzleSocketName = "MuzzleFlash";
 }
 
-void ASGWeaponBase::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void ASGWeaponBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 USkeletalMeshComponent* ASGWeaponBase::GetSkeletalMesh() const
 {
 	return SkeletalMeshComp;
@@ -62,20 +52,6 @@ void ASGWeaponBase::SetMaxPrimaryClipAmmo(int32 NewMaxPrimaryClipAmmo)
 	int32 OldMaxPrimaryClipAmmo = MaxPrimaryClipAmmo;
 	MaxPrimaryClipAmmo = NewMaxPrimaryClipAmmo;
 	OnMaxPrimaryClipAmmoChanged.Broadcast(OldMaxPrimaryClipAmmo, MaxPrimaryClipAmmo);
-}
-
-UAnimSequence* ASGWeaponBase::GetReloadSequence() const
-{
-	if (ReloadSequence)
-	{
-		return ReloadSequence;
-	} 
-	return nullptr;
-}
-
-USoundCue* ASGWeaponBase::GetPickupSound() const
-{
-	return PickupSound;
 }
 
 void ASGWeaponBase::Interact_Implementation(APawn* InstigatorPawn)
@@ -142,9 +118,8 @@ bool ASGWeaponBase::EquipOrMountWeapon(ASGCharacterBase* Character)
 FText ASGWeaponBase::GetInteractText_Implementation(APawn* InstigatorPawn)
 {
 	//return FText::GetEmpty();
-	FString Msg = "Sniper";
 	//return LOCTEXT("Weapon Tips: ", "Can be attached!");
-	return FText::Format(LOCTEXT("Weapon_InteractMessage: ", "{0} x {1} Ammo"),WeaponName, (PrimaryClipAmmo + MaxPrimaryClipAmmo));
+	return FText::Format(LOCTEXT("Weapon Message: ", "{0} x {1} Ammo"),WeaponName, (PrimaryClipAmmo + MaxPrimaryClipAmmo));
 }
 
 #undef LOCTEXT_NAMESPACE

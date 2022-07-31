@@ -6,9 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "SGGameplayFunctionLibrary.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class SHOOTINGGAMEDEMO_API USGGameplayFunctionLibrary : public UBlueprintFunctionLibrary
 {
@@ -21,4 +19,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GamePlayFunctionLibrary")
 	static bool CheckGroupByGameplayTag(AActor* DamageCauser, AActor* TargetActor);
+
+	UFUNCTION(BlueprintCallable, Category = "GamePlayFunctionLibrary")
+	static bool CheckCreditsWhenPurchasing(AActor* InstigatorActor, int32 Cost);
+
+	UFUNCTION(BlueprintCallable, Category = "GamePlayFunctionLibrary")
+	static bool ApplyHealing(AActor* InstigatorActor, float HealingAmount);
+
+	UFUNCTION(BlueprintCallable, Category = "GamePlayFunctionLibrary")
+	static bool ApplyClip(AActor* InstigatorActor, FName ClipName, int32 AmmoAmount);
 };

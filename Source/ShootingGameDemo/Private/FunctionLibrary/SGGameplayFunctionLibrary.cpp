@@ -3,6 +3,10 @@
 
 #include "FunctionLibrary/SGGameplayFunctionLibrary.h"
 #include "Character/SGActionComponent.h"
+#include "Character/SGAttributeComponent.h"
+#include "Character/SGWeaponComponent.h"
+#include "Player/SGPlayerState.h"
+#include "Weapons/SGWeaponBase.h"  // ???
 
 bool USGGameplayFunctionLibrary::ApplyNormalDamage(AActor* DamageCauser, AActor* TargetActor,
                                                    const FHitResult& ImpactResult, float DirectDamage)
@@ -25,5 +29,55 @@ bool USGGameplayFunctionLibrary::CheckGroupByGameplayTag(AActor* DamageCauser, A
 		}
 	}
 	UE_LOG(LogTemp, Log, TEXT("Not in the same group!!!"));
+	return false;
+}
+
+bool USGGameplayFunctionLibrary::CheckCreditsWhenPurchasing(AActor* InstigatorActor, int32 Cost)
+{
+	APawn* PlayerPawn = Cast<APawn>(InstigatorActor);
+	if (PlayerPawn)
+	{
+		ASGPlayerState* PlayerState = PlayerPawn->GetPlayerState<ASGPlayerState>();
+		if (PlayerState)
+		{
+			return PlayerState->RemoveCredits(Cost);
+		}
+	}
+	return false;
+}
+
+bool USGGameplayFunctionLibrary::ApplyHealing(AActor* InstigatorActor, float HealingAmount)
+{
+	USGAttributeComponent* AttributeComp = USGAttributeComponent::GetAttributes(InstigatorActor);
+	if (AttributeComp)
+	{
+		if (!AttributeComp->IsMaxHealth())
+		{
+			return AttributeComp->ApplyHealthChange(InstigatorActor, HealingAmount);
+		}
+	}
+	return false;
+}
+
+bool USGGameplayFunctionLibrary::ApplyClip(AActor* InstigatorActor, FName ClipName, int32 AmmoAmount)
+{
+	USGWeaponComponent* WeaponComp = USGWeaponComponent::GetWeaponComponent(InstigatorActor);
+	if (WeaponComp)
+	{
+		if (WeaponComp->CurrentWeapon != nullptr)
+		{
+			FString WeaponName = WeaponComp->CurrentWeapon->WeaponName.ToString();
+			if (ClipName.ToString() == WeaponName)
+			{
+				const int32 OldMaxPrimaryClipAmmo = WeaponComp->CurrentWeapon->MaxPrimaryClipAmmo;
+				WeaponComp->CurrentWeapon->MaxPrimaryClipAmmo = OldMaxPrimaryClipAmmo + AmmoAmount;
+				
+				WeaponComp->OnClipStatusChanged.Broadcast(WeaponComp, WeaponComp->CurrentWeapon->PrimaryClipAmmo,
+					WeaponComp->CurrentWeapon->MaxPrimaryClipAmmo);
+				
+				return true;
+			}
+		}
+	}
 	return false;
 }

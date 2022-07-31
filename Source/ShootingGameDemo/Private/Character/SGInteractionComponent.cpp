@@ -43,6 +43,7 @@ void USGInteractionComponent::FindBestInteractable()
 
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(CollisionChannel);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);  // ShopAssistantCharacter ???
 
 	FVector EyeLocation;
 	FRotator EyeRotation;

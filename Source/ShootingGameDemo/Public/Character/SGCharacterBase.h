@@ -18,6 +18,7 @@ class USGAttributeComponent;
 class USGWeaponComponent;
 class ASGWeaponBase;
 class USGActionComponent;
+class USGBackpackComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnShowEquipmentStatus, bool, bEquipWeapon, ASGWeaponBase*, Weapon);
 
@@ -121,6 +122,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USGActionComponent* ActionComp;  // 动作组件
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USGBackpackComponent* BackpackComp;  // 背包组件
 
 protected:
 	

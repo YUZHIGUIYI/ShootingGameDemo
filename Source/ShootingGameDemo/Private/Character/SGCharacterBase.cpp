@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "Character/SGActionComponent.h"
 #include "Character/SGAttributeComponent.h"
+#include "Character/SGBackpackComponent.h"
 #include "Character/SGInteractionComponent.h"
 #include "Character/SGWeaponComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -33,6 +34,8 @@ ASGCharacterBase::ASGCharacterBase()
 
 	// 动作组件初始化
 	ActionComp = CreateDefaultSubobject<USGActionComponent>("ActionComp");
+	// 背包组件
+	BackpackComp = CreateDefaultSubobject<USGBackpackComponent>("BackpackComp");
 	// 武器组件实例化
 	WeaponComp = CreateDefaultSubobject<USGWeaponComponent>("WeaponComp");
 	// 交互组件实例化
@@ -55,6 +58,7 @@ ASGCharacterBase::ASGCharacterBase()
 void ASGCharacterBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	
 	// 将 OnHealthChanged 函数绑定到 AttributeComp 组件
 	AttributeComp->OnHealthChanged.AddDynamic(this, &ASGCharacterBase::OnHealthChanged);
 }

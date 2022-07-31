@@ -33,9 +33,7 @@ ASGAmmo::ASGAmmo()
 	MoveComp->ProjectileGravityScale = 0.06f;
 	MoveComp->InitialSpeed = InitialSpeed;
 	MoveComp->MaxSpeed = MaxSpeed;
-
 	
-
 	DirectDamage = 45.0f;
 
 	ImpactShakeInnerRadius = 0.0f;
@@ -55,12 +53,12 @@ void ASGAmmo::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	MoveComp->OnProjectileStop.AddDynamic(this, &ASGAmmo::OnProjectileStop);
+	MoveComp->OnProjectileStop.AddDynamic(this, &ASGAmmo::OnAmmoStop);
 }
 
-void ASGAmmo::OnProjectileStop(const FHitResult& ImpactResult)
+void ASGAmmo::OnAmmoStop(const FHitResult& ImpactResult)
 {
-	UE_LOG(LogTemp, Log, TEXT("Log On ProjectStopFunction"));
+	UE_LOG(LogTemp, Log, TEXT("Log On NormalAmmoStopFunction"));
 	if (ImpactResult.bBlockingHit)
 	{
 		SpawnTM = FTransform(FRotator::ZeroRotator, ImpactResult.ImpactPoint);

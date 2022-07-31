@@ -138,29 +138,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon|AmmoInfo")
 	virtual void SetMaxPrimaryClipAmmo(int32 NewMaxPrimaryClipAmmo);
-
-	UFUNCTION(BlueprintCallable, Category = "Weapon|Animation")
-	UAnimSequence* GetReloadSequence() const;
-
-	UFUNCTION(BlueprintCallable, Category = "Weapon|Sound")
-	USoundCue* GetPickupSound() const;
 	
 	// 实现交互函数
-	void Interact_Implementation(APawn* InstigatorPawn) override;
+	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
-	FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
+	virtual FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
 
 	// 装备或挂载武器
 	bool EquipOrMountWeapon(ASGCharacterBase* Character);
 	
 	ASGWeaponBase();
-
-protected:
-	
-	virtual void BeginPlay() override;
-
-public:	
-	
-	virtual void Tick(float DeltaTime) override;
 
 };

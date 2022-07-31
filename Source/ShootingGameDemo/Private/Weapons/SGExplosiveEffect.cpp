@@ -31,8 +31,3 @@ void ASGExplosiveEffect::BeginPlay()
 	SetLifeSpan(0.5f);
 }
 
-void ASGExplosiveEffect::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-

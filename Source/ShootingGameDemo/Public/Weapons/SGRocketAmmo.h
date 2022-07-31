@@ -8,9 +8,6 @@
 #include "SGRocketAmmo.generated.h"
 
 
-/**
- * 
- */
 UCLASS()
 class SHOOTINGGAMEDEMO_API ASGRocketAmmo : public ASGAmmo
 {
@@ -41,7 +38,9 @@ protected:
 	
 protected:
 	
-	virtual void OnProjectileStop(const FHitResult& ImpactResult) override;
+	virtual void OnAmmoStop(const FHitResult& ImpactResult) override;
+
+	virtual void PostInitializeComponents() override;
 
 	virtual void SpawnEmitterAtLocation(const FHitResult& ImpactResult) override;
 

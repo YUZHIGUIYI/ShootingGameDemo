@@ -30,13 +30,18 @@ ASGRocketAmmo::ASGRocketAmmo()
 
 	ActorsToIgnore.Add(this);
 	
-	MoveComp->OnProjectileStop.AddDynamic(this, &ASGRocketAmmo::OnProjectileStop);
 }
 
-void ASGRocketAmmo::OnProjectileStop(const FHitResult& ImpactResult)
+void ASGRocketAmmo::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	//MoveComp->OnProjectileStop.AddDynamic(this, &ASGRocketAmmo::OnAmmoStop);  // 重写即可，不可声明为UFUNCTION()，不可AddDynamic
+}
+
+void ASGRocketAmmo::OnAmmoStop(const FHitResult& ImpactResult)
 {
 	//Super::OnProjectileStop(ImpactResult);
-	UE_LOG(LogTemp, Log, TEXT("Log on RocketProjectedFunction!"));
+	UE_LOG(LogTemp, Log, TEXT("Log on RocketAmmoStopFunction!"));
 	if (ImpactResult.bBlockingHit)
 	{
 		FVector SpherePos = ImpactResult.ImpactPoint;
