@@ -26,6 +26,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float MaxStrength;
+
+public:
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	bool bIsSprinting;
 	
 public:
 
@@ -40,6 +45,8 @@ public:
 	bool ApplyHealthChange(AActor* InstigatorActor, float Delta);
 
 	// 体力值
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	bool ApplyStrengthChange(AActor* InstigaActor, float Delta);
 
 	UPROPERTY(BlueprintAssignable, Category = "Attributes")
 	FOnAttributeChanged OnHealthChanged;
@@ -67,6 +74,9 @@ public:
 	float GetMaxHealth() const;
 
 	UFUNCTION(BlueprintCallable)
+	bool IsMaxStrength() const;
+
+	UFUNCTION(BlueprintCallable)
 	float GetStrength() const;
 
 	UFUNCTION(BlueprintCallable)
@@ -74,6 +84,8 @@ public:
 	
 protected:
 
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
+	
+	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 };

@@ -18,6 +18,12 @@ public:
 	static bool ApplyNormalDamage(AActor* DamageCauser, AActor* TargetActor, const FHitResult& ImpactResult, float DirectDamage);
 
 	UFUNCTION(BlueprintCallable, Category = "GamePlayFunctionLibrary")
+	static bool ApplyActionEffect(AActor* InstigatorActor, AActor* TargetActor, float EffectValue);
+
+	UFUNCTION(BlueprintCallable, Category = "GamePlayFunctionLibrary")
+	static bool RequireStrength(AActor* InstigatorActor, float DecreaseSpeed);
+
+	UFUNCTION(BlueprintCallable, Category = "GamePlayFunctionLibrary")
 	static bool CheckGroupByGameplayTag(AActor* DamageCauser, AActor* TargetActor);
 
 	UFUNCTION(BlueprintCallable, Category = "GamePlayFunctionLibrary")

@@ -95,6 +95,8 @@ void ASGAICharacter::TakeExplosiveDamage_Implementation(APawn* InstigatorPawn, c
 		UE_LOG(LogTemp, Log, TEXT("Explode Hit Physical Material is: %s"), *PhysicalMaterial->GetName());
 	}
 	AttributeComp->ApplyHealthChange(InstigatorPawn, -Damage * DamageThresholdScale);
+	// 附加燃烧伤害 - 施加方为InstigatorPawn, 受作用方为AICharacter
+	ActionComp->AddAction(InstigatorPawn, BurningEffectClass);
 }
 
 void ASGAICharacter::SetTargetActor(AActor* NewTarget)

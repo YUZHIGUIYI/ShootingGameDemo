@@ -17,6 +17,13 @@ class SHOOTINGGAMEDEMO_API ASGPlayerController : public APlayerController
 
 protected:
 
+	// 暂停菜单class
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> PauseMenuClass;
+	// 暂停菜单实例
+	UPROPERTY()
+	UUserWidget* PauseMenuInstance;  
+
 	UPROPERTY(BlueprintAssignable)
 	FOnPawnChanged OnPawnChanged;
 
@@ -24,6 +31,14 @@ protected:
 	FOnPlayerStateChanged OnPlayerStateReceived;  // 解决客户端在加入游戏时无法尽早获得PlayerState的问题
 
 protected:
+
+	virtual void SetupInputComponent() override;  // 重写输入事件绑定按键
+
+	UFUNCTION(BlueprintCallable)
+	void TogglePauseMenu();  // ESC键切换暂停菜单
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleBackpackWidget();  // B键切换背包组件
 
 	// 重写 - 玩家进入游戏或玩家死亡复活时调用
 	virtual void SetPawn(APawn* InPawn) override;

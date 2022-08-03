@@ -15,6 +15,20 @@ USGAttributeComponent::USGAttributeComponent()
 
 	MaxStrength = 100.0f;
 	Strength = MaxStrength;
+
+	bIsSprinting = false;
+
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = true;
+	PrimaryComponentTick.SetTickFunctionEnable(true);
+}
+
+void USGAttributeComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// 激活TickComponent
+	RegisterComponent();
 }
 
 USGAttributeComponent* USGAttributeComponent::GetAttributes(AActor* FromActor)
@@ -70,6 +84,23 @@ bool USGAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Del
 	return ActualDelta != 0.0f;
 }
 
+bool USGAttributeComponent::ApplyStrengthChange(AActor* InstigaActor, float Delta)
+{
+	float OldStrength = Strength;
+	float NewStrength = FMath::Clamp(Strength + Delta, 0.0f, MaxStrength);
+
+	float ActualDelta = NewStrength - OldStrength;
+	Strength = NewStrength;
+	if (ActualDelta != 0.0f)
+	{
+		OnStrengthChanged.Broadcast(InstigaActor, this, NewStrength, Delta);
+	}
+
+	// ???
+
+	return ActualDelta != 0.0f;
+}
+
 bool USGAttributeComponent::Kill(AActor* InstigatorActor)
 {
 	// 仅用于调试，kill AI
@@ -96,6 +127,11 @@ float USGAttributeComponent::GetMaxHealth() const
 	return MaxHealth;
 }
 
+bool USGAttributeComponent::IsMaxStrength() const
+{
+	return Strength == MaxStrength;
+}
+
 float USGAttributeComponent::GetStrength() const
 {
 	return Strength;
@@ -106,9 +142,15 @@ float USGAttributeComponent::GetMaxStrength() const
 	return MaxStrength;
 }
 
-void USGAttributeComponent::BeginPlay()
+void USGAttributeComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                          FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::BeginPlay();
+	// 仅在非冲刺状态且且非满体力状态下恢复体力值
+	if (!bIsSprinting && !IsMaxStrength())
+	{
+		ApplyStrengthChange(GetOwner(), 0.2f);  // ???
+	} 
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
 

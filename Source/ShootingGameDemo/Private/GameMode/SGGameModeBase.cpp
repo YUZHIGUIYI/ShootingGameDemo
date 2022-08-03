@@ -12,6 +12,8 @@
 #include "EnvironmentQuery/EnvQueryInstanceBlueprintWrapper.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "GameMode/SGAIDataAsset.h"
+#include "GameSubsystems/SGSaveGameSubsystem.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/SGPlayerState.h"
 
 // 控制台指令 - 控制AI生成
@@ -25,6 +27,18 @@ ASGGameModeBase::ASGGameModeBase()
 	CreditsPerKill = 25.0f;
 }
 
+void ASGGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	// 获取SGSaveGameSubsystem
+	/*USGSaveGameSubsystem* SGSubsystem = GetGameInstance()->GetSubsystem<USGSaveGameSubsystem>();*/
+
+	// 可选插槽名称，否则返回SGSaveGameSettings中指定的插槽
+	/*FString SelectedSaveGameSlot = UGameplayStatics::ParseOption(Options, "SaveGame");
+	SGSubsystem->LoadSaveGame(SelectedSaveGameSlot);*/
+}
+
 void ASGGameModeBase::StartPlay()
 {
 	Super::StartPlay();
@@ -32,6 +46,18 @@ void ASGGameModeBase::StartPlay()
 	// 生成AI定时器
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnAI, this, &ASGGameModeBase::SpawnAITimerElapsed,
 		SpawnTimeInterval, true);
+}
+
+void ASGGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	// 在Super父类之前调用，在SGPlayerController中调用BeginPlayingState之前设置变量（该函数可实例化UI）
+	/*USGSaveGameSubsystem* SGSubsystem = GetGameInstance()->GetSubsystem<USGSaveGameSubsystem>();
+	SGSubsystem->HandleRestorePlayerData(NewPlayer);*/
+	
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	// 覆盖Player的出生点
+	/*SGSubsystem->OverrideSpawnTransform(NewPlayer);*/
 }
 
 void ASGGameModeBase::SpawnAITimerElapsed()
@@ -103,7 +129,7 @@ void ASGGameModeBase::OnAISpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper*
 			UAssetManager* AssetManager = UAssetManager::GetIfValid();
 			if (AssetManager)
 			{
-				UE_LOG(LogTemp, Log, TEXT("Loading AI..."));  // ??
+				UE_LOG(LogTemp, Log, TEXT("Loading AI Asset..."));  // ??
 				
 				TArray<FName> Bundles;
 

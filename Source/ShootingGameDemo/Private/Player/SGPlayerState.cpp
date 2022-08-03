@@ -39,10 +39,10 @@ void ASGPlayerState::SavePlayerState_Implementation(USGSaveGame* SaveObject)
 		FPlayerSaveData SavedData;
 		SavedData.Credits = Credits;
 		SavedData.PersonalRecordTime = PersonalRecordTime;
-		SavedData.PlayerID = GetUniqueId().ToString();  // 获取唯一Id，转换为FString
+		SavedData.PlayerID = GetUniqueId().ToString();  // 获取唯一的PlayerId，转换为FString
 
 		// PlayerCharacter是否存活
-		if (APawn* PlayerPawn = GetPawn())
+		if (const APawn* PlayerPawn = GetPawn())
 		{
 			SavedData.Location = PlayerPawn->GetActorLocation();
 			SavedData.Rotation = PlayerPawn->GetActorRotation();

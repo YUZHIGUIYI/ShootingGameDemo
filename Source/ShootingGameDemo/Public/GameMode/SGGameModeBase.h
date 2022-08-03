@@ -86,6 +86,12 @@ public:
 
 	virtual void StartPlay() override;
 
+	// SaveGame系统相关 - 重写InitGame
+	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+
+	// SaveGame系统相关 - 重写HandleStartingNewPlayer - 表示Player已准备好进入游戏，这可能会启动游戏
+	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
 	/*// SaveGame系统 - 载入游戏
 	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 

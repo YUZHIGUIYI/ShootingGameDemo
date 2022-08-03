@@ -17,13 +17,13 @@ public:
 	FString ActorName;
 
 	UPROPERTY()
-	FName NewActorName;
+	FName NewActorName;  // Actor标识符
 
 	UPROPERTY()
-	FTransform Transform;
+	FTransform Transform;  // Actor的Location、Rotation与Scale
 
 	UPROPERTY()
-	TArray<uint8> ByteData;
+	TArray<uint8> ByteData;  // 可以包含Actor的所有SaveGame UPROPERTY() 变量
 };
 
 USTRUCT()
@@ -34,10 +34,10 @@ struct FPlayerSaveData
 public:
 
 	UPROPERTY()
-	FString PlayerID;
+	FString PlayerID;  // 在线游戏Player识别标识
 
 	UPROPERTY()
-	int32 Credits;
+	int32 Credits;  // Player积分
 
 	UPROPERTY()
 	float PersonalRecordTime;

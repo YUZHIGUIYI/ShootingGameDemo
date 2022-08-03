@@ -14,6 +14,33 @@ bool USGGameplayFunctionLibrary::ApplyNormalDamage(AActor* DamageCauser, AActor*
 	return true;  // 待实现
 }
 
+bool USGGameplayFunctionLibrary::ApplyActionEffect(AActor* InstigatorActor, AActor* TargetActor, float EffectValue)
+{
+	// InstigatorActor为Effect的施加方，而TargetActor为Effect的受作用方
+	USGAttributeComponent* AttributeComp = USGAttributeComponent::GetAttributes(TargetActor);
+	if (AttributeComp)
+	{
+		return AttributeComp->ApplyHealthChange(InstigatorActor, EffectValue);
+	}
+	return false;
+}
+
+bool USGGameplayFunctionLibrary::RequireStrength(AActor* InstigatorActor, float DecreaseSpeed)
+{
+	USGAttributeComponent* AttributeComp = USGAttributeComponent::GetAttributes(InstigatorActor);
+	if (AttributeComp)
+	{
+		if (AttributeComp->GetStrength() > 1.0f)
+		{
+			return AttributeComp->ApplyStrengthChange(InstigatorActor, -DecreaseSpeed);
+		} else
+		{
+			AttributeComp->bIsSprinting = false;
+		}
+	}
+	return false;
+}
+
 bool USGGameplayFunctionLibrary::CheckGroupByGameplayTag(AActor* DamageCauser, AActor* TargetActor)
 {
 	USGActionComponent* CauserActionComp = USGActionComponent::GetActionComponent(DamageCauser);

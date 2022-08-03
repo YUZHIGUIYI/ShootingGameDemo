@@ -102,12 +102,15 @@ void ASGCharacterBase::OnHealthChanged(AActor* InstigatorActor, USGAttributeComp
 {
 	if (Delta < 0.0f)
 	{
-		// 考虑加入受击特效或debuff
+		// 考虑加入受击特效Effect
 	}
 	// Character 死亡
 	if (NewHealth <= 0.0f && Delta < 0.0f)
 	{
+		StopFire();  // 停止开火 - 防止出现连发枪支继续开火的Bug
 		WeaponComp->DiscardAllWeapons(this);  // Character死亡时掉落所有武器
+		bEquipWeapon = false;
+		OnShowEquipmentStatus.Broadcast(bEquipWeapon, nullptr);
 
 		// @Fixme: 开镜时死亡？
 		if (bIsAiming)
@@ -209,11 +212,17 @@ void ASGCharacterBase::MoveRight(float value)
 
 void ASGCharacterBase::SprintStart()
 {
-	ActionComp->StartActionByName(this, "Sprint");
+	// 移动过程中进行短距离冲刺消耗体力值
+	if (AttributeComp->GetStrength() > 1.0f && GetVelocity().Size() > 0.0f)
+	{
+		AttributeComp->bIsSprinting = true;
+		ActionComp->StartActionByName(this, "Sprint");
+	}
 }
 
 void ASGCharacterBase::SprintStop()
 {
+	AttributeComp->bIsSprinting = false;
 	ActionComp->StopActionByName(this, "Sprint");
 }
 

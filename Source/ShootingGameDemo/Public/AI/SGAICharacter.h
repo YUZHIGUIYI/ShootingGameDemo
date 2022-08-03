@@ -14,6 +14,7 @@ class USGWorldWidget;         // 生命条
 class USGActionComponent;     // 动作组件
 class UAIPerceptionComponent;  // 感知源组件
 class UAISenseConfig_Sight;  // 配置文件
+class USGAction;  
 
 UCLASS()
 class SHOOTINGGAMEDEMO_API ASGAICharacter : public ACharacter, public ISGDamageInterface
@@ -38,10 +39,13 @@ protected:
 
 	// 受击特效？
 
+	// 燃烧Effect - 火箭弹或榴弹的额外伤害
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "ActionEffect")
+	TSubclassOf<USGAction> BurningEffectClass;
+
 	// 对应于AI行为树的Blackboard的TargetActor
 	UPROPERTY(VisibleAnywhere, Category = "Blackboard")
 	FName TargetActorKey;
-
 
 protected:
 

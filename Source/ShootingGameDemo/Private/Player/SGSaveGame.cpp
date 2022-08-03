@@ -15,7 +15,7 @@ FPlayerSaveData* USGSaveGame::GetPlayerData(APlayerState* PlayerState)
 	// UObjects无法访问UWorld，因此需要通过PlayerState获取
 	if (PlayerState->GetWorld()->IsPlayInEditor())
 	{
-		UE_LOG(LogTemp, Log, TEXT("In PIE Mode, we cannot use PlayerID to retrieve Saved Player data. Using first entry in array if available."));
+		UE_LOG(LogTemp, Log, TEXT("In PIE Mode, we cannot use PlayerID to retrieve SavedPlayer data. Using first entry in array if available."));
 		if (SavedPlayers.IsValidIndex(0))
 		{
 			return &SavedPlayers[0];
@@ -25,7 +25,7 @@ FPlayerSaveData* USGSaveGame::GetPlayerData(APlayerState* PlayerState)
 
 	// 非PIE模式 - 返回PlayerState唯一的online id - 见UObject
 	FString PlayerID = PlayerState->GetUniqueId().ToString();
-	// lambda表达式 - 找到符合PlayerID的FPlayerSaveData
+	// lambda表达式 - 找到具有相同PlayerID的Player的FPlayerSaveData
 	return SavedPlayers.FindByPredicate([&] (const FPlayerSaveData& Data)
 	{
 		return Data.PlayerID == PlayerID;
