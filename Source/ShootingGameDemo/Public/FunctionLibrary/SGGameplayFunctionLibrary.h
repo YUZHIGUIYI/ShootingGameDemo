@@ -18,6 +18,9 @@ public:
 	static bool ApplyNormalDamage(AActor* DamageCauser, AActor* TargetActor, const FHitResult& ImpactResult, float DirectDamage);
 
 	UFUNCTION(BlueprintCallable, Category = "GamePlayFunctionLibrary")
+	static void ShiftOfPerspectives(AActor* PlayerActor, AActor* InteractiveActor, bool bIsVisible);
+
+	UFUNCTION(BlueprintCallable, Category = "GamePlayFunctionLibrary")
 	static bool ApplyActionEffect(AActor* InstigatorActor, AActor* TargetActor, float EffectValue);
 
 	UFUNCTION(BlueprintCallable, Category = "GamePlayFunctionLibrary")
@@ -34,4 +37,5 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GamePlayFunctionLibrary")
 	static bool ApplyClip(AActor* InstigatorActor, FName ClipName, int32 AmmoAmount);
+	
 };

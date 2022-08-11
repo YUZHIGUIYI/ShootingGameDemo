@@ -197,6 +197,7 @@ void ASGCharacterBase::MoveForward(float value)
 	FRotator ControlRot = GetControlRotation();
 	ControlRot.Pitch = 0.0f;
 	ControlRot.Roll = 0.0f;
+	
 	AddMovementInput(ControlRot.Vector(), value);
 }
 
@@ -360,3 +361,4 @@ void ASGCharacterBase::TakeDirectDamage_Implementation(APawn* InstigatorPawn, co
 	}
 	AttributeComp->ApplyHealthChange(InstigatorPawn, -Damage * DamageThresholdScale);
 }
+

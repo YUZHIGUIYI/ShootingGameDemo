@@ -49,7 +49,83 @@ void ASGPlayerController::TogglePauseMenu()
 
 void ASGPlayerController::ToggleBackpackWidget()
 {
-	// 待实现
+	if (BackpackUIInstance && BackpackUIInstance->IsInViewport())
+	{
+		BackpackUIInstance->RemoveFromParent();
+		BackpackUIInstance = nullptr;
+
+		bShowMouseCursor = false;
+		SetInputMode(FInputModeGameOnly());
+
+		UE_LOG(LogTemp, Log, TEXT("Remove PauseMenuWidget!"));
+
+		return;
+	}
+
+	BackpackUIInstance = CreateWidget<UUserWidget>(this, BackpackUIClass);
+	if (BackpackUIInstance)
+	{
+		BackpackUIInstance->AddToViewport(96);
+
+		bShowMouseCursor = true;
+		SetInputMode(FInputModeUIOnly());
+
+		UE_LOG(LogTemp, Log, TEXT("Create PauseMenuWidget!"));
+	}
+}
+
+void ASGPlayerController::ToggleMissionTipsWidget()
+{
+	if (MissionUIInstance && MissionUIInstance->IsInViewport())
+	{
+		MissionUIInstance->RemoveFromParent();
+		MissionUIInstance = nullptr;
+
+		GetPawn()->EnableInput(this);
+		bShowMouseCursor = false;
+		SetInputMode(FInputModeGameOnly());
+		
+		return;
+	}
+	
+	MissionUIInstance = CreateWidget<UUserWidget>(this, MissionTipsClass);
+	if (MissionUIInstance)
+	{
+		MissionUIInstance->AddToViewport(97);
+
+		GetPawn()->DisableInput(this);
+		bShowMouseCursor = true;
+		SetInputMode(FInputModeUIOnly());
+
+		UE_LOG(LogTemp, Log, TEXT("Mission Starts!"));
+	}
+}
+
+void ASGPlayerController::ToggleMissionSettlementWidget()
+{
+	if (MissionUIInstance && MissionUIInstance->IsInViewport())
+	{
+		MissionUIInstance->RemoveFromParent();
+		MissionUIInstance = nullptr;
+
+		GetPawn()->EnableInput(this);
+		bShowMouseCursor = false;
+		SetInputMode(FInputModeGameOnly());
+		
+		return;
+	}
+
+	MissionUIInstance = CreateWidget<UUserWidget>(this, MissionSettlementClass);
+	if (MissionUIInstance)
+	{
+		MissionUIInstance->AddToViewport(101);
+
+		GetPawn()->DisableInput(this);
+		bShowMouseCursor = true;
+		SetInputMode(FInputModeUIOnly());
+
+		UE_LOG(LogTemp, Log, TEXT("Mission Completed!"));
+	}
 }
 
 void ASGPlayerController::SetPawn(APawn* InPawn)

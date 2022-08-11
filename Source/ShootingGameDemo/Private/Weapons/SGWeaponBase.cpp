@@ -6,6 +6,7 @@
 #include "Character/SGWeaponComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/SGPlayerState.h"
 
 #define LOCTEXT_NAMESPACE "InteractableActors"
 
@@ -95,8 +96,19 @@ void ASGWeaponBase::Interact_Implementation(APawn* InstigatorPawn)
 		}
 		if (!bEquipMount)
 		{
-			FString FailedMsg = FString::Printf(TEXT("Failed to equip or mount: %s, now has %d weapons"), *GetNameSafe(this), WeaponComp->WeaponMap.Num() + 1);
+			// 若已超过装备上限，则放入背包
+			FString FailedMsg = FString::Printf(TEXT("Failed to equip or mount: %s, now has %d weapons equipped, pick up to Backpack"), *GetNameSafe(this),
+				WeaponComp->WeaponMap.Num() + 1);
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FailedMsg);
+
+			ASGPlayerState* PlayerState = Cast<ASGPlayerState>(Character->GetPlayerState());
+			if (PlayerState)
+			{
+				if (PlayerState->PickupItemToBackpack(RowName))
+				{
+					Destroy();
+				}
+			}
 		}
 	}
 	

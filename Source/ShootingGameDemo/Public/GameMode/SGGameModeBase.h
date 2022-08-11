@@ -13,6 +13,7 @@ class USGAIDataAsset;
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
+class UUserWidget;
 
 // 数据表行 - 为在Game Mode中生成AI提供信息
 USTRUCT(BlueprintType)
@@ -63,6 +64,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI Information")
 	int32 CreditsPerKill;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Mission")
+	int32 RequiredNumOfKills;
+
 	FTimerHandle TimerHandle_SpawnAI;
 
 protected:
@@ -78,9 +82,14 @@ protected:
 	UFUNCTION()
 	void RespawnPlayerElapsed(AController* Controller);  // Player重生
 
+	void CompleteMission(APawn* Killer);  // 游戏胜利条件
+
 public:
 
 	ASGGameModeBase();
+
+	UFUNCTION(BlueprintCallable, Category = "Mission")
+	int32 GetRequiredNumOfKills() const;
 
 	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
 
@@ -92,15 +101,6 @@ public:
 	// SaveGame系统相关 - 重写HandleStartingNewPlayer - 表示Player已准备好进入游戏，这可能会启动游戏
 	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 
-	/*// SaveGame系统 - 载入游戏
-	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
-
-	// SaveGame系统
-	void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
-
-	// SaveGame系统
-	UFUNCTION(BlueprintCallable, Category = "SaveGame")
-	void WriteSaveGame();
-
-	void LoadSaveGame();*/
+	UFUNCTION(Exec)
+	void KillAllAI();  // 强制Kill所有AI
 };

@@ -189,6 +189,6 @@ public:
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void TakeDirectDamage_Implementation(APawn* InstigatorPawn, const FHitResult& ImpactResult, float Damage) override;
+	virtual void TakeDirectDamage_Implementation(APawn* InstigatorPawn, const FHitResult& ImpactResult, float Damage) override;
 
 };

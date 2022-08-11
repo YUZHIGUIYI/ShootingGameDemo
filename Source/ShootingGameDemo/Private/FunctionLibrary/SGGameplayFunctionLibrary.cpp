@@ -5,6 +5,7 @@
 #include "Character/SGActionComponent.h"
 #include "Character/SGAttributeComponent.h"
 #include "Character/SGWeaponComponent.h"
+#include "GameFramework/Character.h"
 #include "Player/SGPlayerState.h"
 #include "Weapons/SGWeaponBase.h"  // ???
 
@@ -12,6 +13,41 @@ bool USGGameplayFunctionLibrary::ApplyNormalDamage(AActor* DamageCauser, AActor*
                                                    const FHitResult& ImpactResult, float DirectDamage)
 {
 	return true;  // 待实现
+}
+
+void USGGameplayFunctionLibrary::ShiftOfPerspectives(AActor* PlayerActor, AActor* InteractiveActor, bool bIsVisible)
+{
+	const ACharacter* PlayerCharacter = Cast<ACharacter>(PlayerActor);
+	if (PlayerCharacter)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(PlayerCharacter->GetController());
+		
+		if (PlayerController)
+		{
+			if (bIsVisible)
+			{
+				// 退出交互，视角回到玩家身上，设置为游戏模式
+				PlayerController->SetViewTargetWithBlend(PlayerActor, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic, 2.0f);
+				PlayerController->SetInputMode(FInputModeGameOnly());
+				PlayerController->bShowMouseCursor = false;
+				UE_LOG(LogTemp, Log, TEXT("Exit Shop!"));
+			} else
+			{
+				// 开始交互，视角转到交互对象上，设置为UI模式
+				PlayerController->SetViewTargetWithBlend(InteractiveActor, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic, 2.0f);
+				PlayerController->SetInputMode(FInputModeUIOnly());
+				PlayerController->bShowMouseCursor = true;
+				UE_LOG(LogTemp, Log, TEXT("Enter into Shop!"));
+			}
+		}
+		
+		PlayerCharacter->GetMesh()->SetVisibility(bIsVisible);
+		const USGWeaponComponent* WeaponComp = USGWeaponComponent::GetWeaponComponent(PlayerActor);
+		if (WeaponComp && WeaponComp->CurrentWeapon)
+		{
+			WeaponComp->CurrentWeapon->GetSkeletalMesh()->SetVisibility(bIsVisible);
+		}
+	}
 }
 
 bool USGGameplayFunctionLibrary::ApplyActionEffect(AActor* InstigatorActor, AActor* TargetActor, float EffectValue)

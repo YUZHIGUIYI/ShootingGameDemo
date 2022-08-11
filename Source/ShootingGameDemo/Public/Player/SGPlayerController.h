@@ -22,8 +22,23 @@ protected:
 	TSubclassOf<UUserWidget> PauseMenuClass;
 	// 暂停菜单实例
 	UPROPERTY()
-	UUserWidget* PauseMenuInstance;  
+	UUserWidget* PauseMenuInstance;
+	// 背包菜单class
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> BackpackUIClass;
+	// 背包菜单实例
+	UPROPERTY()
+	UUserWidget* BackpackUIInstance;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> MissionTipsClass;  // 任务提示
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> MissionSettlementClass;  // 任务结算
+
+	UPROPERTY()
+	UUserWidget* MissionUIInstance;  // 任务UI实例
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnPawnChanged OnPawnChanged;
 
@@ -40,6 +55,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ToggleBackpackWidget();  // B键切换背包组件
 
+	UFUNCTION(BlueprintCallable)
+	void ToggleMissionTipsWidget();  // 任务提示
+
 	// 重写 - 玩家进入游戏或玩家死亡复活时调用
 	virtual void SetPawn(APawn* InPawn) override;
 
@@ -51,4 +69,9 @@ protected:
 	void BlueprintBeginPlayingState();
 
 	void OnRep_PlayerState() override;
+
+public:
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleMissionSettlementWidget();  // 任务结算
 };

@@ -22,6 +22,6 @@ protected:
 	TSubclassOf<UUserWidget> ShopWidgetClass;
 
 public:
-
-	void EnterShopMode(APawn* InstigatorPawn);
+	
+	void ToggleShopMode(APawn* InstigatorPawn);
 };

@@ -6,6 +6,7 @@
 #include "AI/SGAICharacter.h"
 #include "Character/SGAttributeComponent.h"
 #include "EngineUtils.h"
+#include "Blueprint/UserWidget.h"
 #include "Character/SGActionComponent.h"
 #include "Character/SGCharacterBase.h"
 #include "Engine/AssetManager.h"
@@ -14,6 +15,7 @@
 #include "GameMode/SGAIDataAsset.h"
 #include "GameSubsystems/SGSaveGameSubsystem.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/SGPlayerController.h"
 #include "Player/SGPlayerState.h"
 
 // 控制台指令 - 控制AI生成
@@ -25,6 +27,14 @@ ASGGameModeBase::ASGGameModeBase()
 	CooldownBetweenFailure = 8.0f;
 	SpawnTimeInterval = 2.5f;
 	CreditsPerKill = 25.0f;
+	RequiredNumOfKills = 1;
+
+	PlayerStateClass = ASGPlayerState::StaticClass();
+}
+
+int32 ASGGameModeBase::GetRequiredNumOfKills() const
+{
+	return RequiredNumOfKills;
 }
 
 void ASGGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -147,7 +157,7 @@ void ASGGameModeBase::OnAIDataLoaded(FPrimaryAssetId LoadedId, FVector SpawnLoca
 {
 	UE_LOG(LogTemp, Log, TEXT("Finished loading!"));  // ??
 
-	// 获取对象实例
+	// 生成AI实例，赋予Action
 	UAssetManager* AssetManager = UAssetManager::GetIfValid();
 	if (AssetManager)
 	{
@@ -210,8 +220,45 @@ void ASGGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 		if (PlayerState)
 		{
 			PlayerState->AddCredits(CreditsPerKill);
+			PlayerState->AddNumOfKills(1);
+			UE_LOG(LogTemp, Log, TEXT("Kill %d AI."), PlayerState->GetNumOfKills());
+			if (PlayerState->GetNumOfKills() > RequiredNumOfKills)
+			{
+				CompleteMission(KillerPawn);
+			}
 		}
 	}
 }
 
+void ASGGameModeBase::KillAllAI()
+{
+	for (TActorIterator<ASGAICharacter> It(GetWorld()); It; ++It)
+	{
+		ASGAICharacter* AICharacter = *It;
+
+		USGAttributeComponent* AttributeComp = USGAttributeComponent::GetAttributes(AICharacter);
+		if (ensure(AttributeComp) && AttributeComp->IsAlive())
+		{
+			AttributeComp->Kill(this);
+		}
+	}
+}
+
+void ASGGameModeBase::CompleteMission(APawn* Killer)
+{
+	if (Killer)
+	{
+		ASGPlayerController* PlayerController = Cast<ASGPlayerController>(Killer->GetController());
+		if (PlayerController)
+		{
+			//Killer->DisableInput(PlayerController);  // 禁止输入事件
+			GetWorldTimerManager().ClearTimer(TimerHandle_SpawnAI);  // 停止生成AI
+			KillAllAI();  // 强制Kill所有AI
+			UE_LOG(LogTemp, Log, TEXT("You Win!"));
+			
+			// 任务结束 - 待实现
+			PlayerController->ToggleMissionSettlementWidget();
+		}
+	}
+}
 

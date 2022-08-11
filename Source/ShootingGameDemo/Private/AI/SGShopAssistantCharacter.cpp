@@ -38,7 +38,7 @@ void ASGShopAssistantCharacter::Interact_Implementation(APawn* InstigatorPawn)
 	ASGShopAssistantController* ShopAssistantController = Cast<ASGShopAssistantController>(GetController());
 	if (ShopAssistantController)
 	{
-		ShopAssistantController->EnterShopMode(InstigatorPawn);
+		ShopAssistantController->ToggleShopMode(InstigatorPawn);
 	}
 }
 

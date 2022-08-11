@@ -2,38 +2,33 @@
 
 
 #include "AI/SGShopAssistantController.h"
-#include "AI/SGShopAssistantCharacter.h"
 #include "Blueprint/UserWidget.h"
-#include "Character/SGCharacterBase.h"
+#include "GameFramework/Character.h"
+#include "FunctionLibrary/SGGameplayFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
-void ASGShopAssistantController::EnterShopMode(APawn* InstigatorPawn)
+void ASGShopAssistantController::ToggleShopMode(APawn* InstigatorPawn)
 {
-	ASGCharacterBase* InstigatorCharacter = Cast<ASGCharacterBase>(InstigatorPawn);
-	ASGShopAssistantCharacter* ShopAssistantCharacter = Cast<ASGShopAssistantCharacter>(GetPawn());
-	if (InstigatorCharacter)
+	APawn* ControlledPawn = Cast<APawn>(GetPawn());
+	ACharacter* InstigatorCharacter = Cast<ACharacter>(InstigatorPawn);
+	
+	if (InstigatorCharacter && ControlledPawn)
 	{
-		if (ShopWidget == nullptr)
-		{
-			ShopWidget = CreateWidget<UUserWidget>(GetWorld(), ShopWidgetClass); 
-		}
+		ShopWidget = CreateWidget<UUserWidget>(GetWorld(), ShopWidgetClass); 
 		if (ShopWidget)
 		{
-			// 转换视角 - 单人游戏
-			InstigatorCharacter->GetMesh()->SetVisibility(false);
-			APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-			PlayerController->SetViewTargetWithBlend(ShopAssistantCharacter, 0.75f, EViewTargetBlendFunction::VTBlend_Cubic,
-				2.0f);
-			
-			ShopWidget->AddToViewport(36);  // @Fixme later
-			//ShopWidget->IsInViewport();
+			// 进入交互，视角转到可交互对象上，设置为UI模式
+			USGGameplayFunctionLibrary::ShiftOfPerspectives(InstigatorCharacter, ControlledPawn, false);
 
+			/*APlayerController* PlayerController = Cast<APlayerController>(InstigatorCharacter->GetController());
+			UE_LOG(LogTemp, Log, TEXT("PlayerController is: %s!"), *GetNameSafe(PlayerController));
 			FInputModeUIOnly InputModeUIOnly;
 			InputModeUIOnly.SetWidgetToFocus(ShopWidget->TakeWidget());  // 转换成TSharedRef<SWidget>
 			InputModeUIOnly.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 			PlayerController->SetInputMode(InputModeUIOnly);
-			PlayerController->bShowMouseCursor = true;
+			PlayerController->bShowMouseCursor = true;*/
 
+			ShopWidget->AddToViewport(36);  // @Fixme later
 			UE_LOG(LogTemp, Warning, TEXT("Enter into shop!!!"));
 		}
 	}
