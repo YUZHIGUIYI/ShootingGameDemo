@@ -13,6 +13,7 @@
 #include "EnvironmentQuery/EnvQueryInstanceBlueprintWrapper.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "GameMode/SGAIDataAsset.h"
+#include "GameSubsystems/SGGameMissionSubsystem.h"
 #include "GameSubsystems/SGSaveGameSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/SGPlayerController.h"
@@ -27,6 +28,7 @@ ASGGameModeBase::ASGGameModeBase()
 	CooldownBetweenFailure = 8.0f;
 	SpawnTimeInterval = 2.5f;
 	CreditsPerKill = 25.0f;
+	ScorePerKill = 20;
 	RequiredNumOfKills = 1;
 
 	PlayerStateClass = ASGPlayerState::StaticClass();
@@ -206,8 +208,14 @@ void ASGGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 		FTimerDelegate Delegate;
 		Delegate.BindUFunction(this, "RespawnPlayerElapsed", Player->GetController());
 
-		float RespawnDelay = 4.0f;
+		const float RespawnDelay = 4.0f;
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
+
+		USGGameMissionSubsystem* MissionSubsystem = GetGameInstance()->GetSubsystem<USGGameMissionSubsystem>();
+		if (MissionSubsystem)
+		{
+			MissionSubsystem->AddScore(-ScorePerKill * 0.5);  // 死亡扣除分数
+		}
 	}
 	UE_LOG(LogTemp, Warning, TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(Killer));
 
@@ -220,8 +228,16 @@ void ASGGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 		if (PlayerState)
 		{
 			PlayerState->AddCredits(CreditsPerKill);
-			PlayerState->AddNumOfKills(1);
+			PlayerState->AddNumOfKills(1);  // PlayerState或者Subsystem中？
 			UE_LOG(LogTemp, Log, TEXT("Kill %d AI."), PlayerState->GetNumOfKills());
+			
+			USGGameMissionSubsystem* MissionSubsystem = GetGameInstance()->GetSubsystem<USGGameMissionSubsystem>();
+			if (MissionSubsystem)
+			{
+				MissionSubsystem->AddScore(ScorePerKill);  // 击杀AI获得分数
+				MissionSubsystem->AddNumOfKills(1);  // 击杀数量 + 1，不适合放在子系统中（多人无法兼顾），仅展示
+			}
+			
 			if (PlayerState->GetNumOfKills() > RequiredNumOfKills)
 			{
 				CompleteMission(KillerPawn);

@@ -2,7 +2,6 @@
 
 
 #include "ShootingGameDemo/Public/Character/SGCharacterBase.h"
-#include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Character/SGActionComponent.h"
 #include "Character/SGAttributeComponent.h"
@@ -42,10 +41,6 @@ ASGCharacterBase::ASGCharacterBase()
 	InteractionComp = CreateDefaultSubobject<USGInteractionComponent>("InteractionComp");
 	// 属性组件实例化
 	AttributeComp = CreateDefaultSubobject<USGAttributeComponent>("AttributeComp");
-	// ASC实例化
-	AbilitySystemComp = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComp");
-	// 在OwnerActor的构造方法中创建的AttributeSet将会自动注册到ASC中
-	AttributeSet = CreateDefaultSubobject<USGAttributeSet>("AttributeSet");
 
 	bIsRecoiling = false;
 	RecoilRate = 0.1f;
@@ -63,11 +58,6 @@ void ASGCharacterBase::PostInitializeComponents()
 	AttributeComp->OnHealthChanged.AddDynamic(this, &ASGCharacterBase::OnHealthChanged);
 }
 
-UAbilitySystemComponent* ASGCharacterBase::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComp;
-}
-
 void ASGCharacterBase::ChangeActionMode()
 {
 	bUseControllerRotationYaw = bEquipWeapon;
@@ -77,24 +67,6 @@ void ASGCharacterBase::ChangeActionMode()
 void ASGCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (ensure(AbilitySystemComp))
-	{
-		// 为ASC赋予技能
-		if (HasAuthority() && CharacterAbilities.Num() > 0)
-		{
-			for (auto i = 0; i < CharacterAbilities.Num(); i++)
-			{
-				if (CharacterAbilities[i] == nullptr)
-				{
-					continue;
-				}
-				AbilitySystemComp->GiveAbility(FGameplayAbilitySpec(CharacterAbilities[i].GetDefaultObject(), 1, 0));
-			}
-		}
-	}
-	// 初始化ASC
-	AbilitySystemComp->InitAbilityActorInfo(this, this);  // @fixme in multiplayer game
 }
 
 void ASGCharacterBase::OnHealthChanged(AActor* InstigatorActor, USGAttributeComponent* OwningComp, float NewHealth,
@@ -107,16 +79,13 @@ void ASGCharacterBase::OnHealthChanged(AActor* InstigatorActor, USGAttributeComp
 	// Character 死亡
 	if (NewHealth <= 0.0f && Delta < 0.0f)
 	{
-		StopFire();  // 停止开火 - 防止出现连发枪支继续开火的Bug
+		//StopFire();  // 停止开火 - 防止出现连发枪支继续开火的Bug
+		//AimingActionStop_Implementation();  // 停止瞄准
+		StopActionsFeedBack();
+		
 		WeaponComp->DiscardAllWeapons(this);  // Character死亡时掉落所有武器
 		bEquipWeapon = false;
 		OnShowEquipmentStatus.Broadcast(bEquipWeapon, nullptr);
-
-		// @Fixme: 开镜时死亡？
-		if (bIsAiming)
-		{
-			AimingActionStop();  // 这个函数在蓝图中实现
-		}
 		
 		APlayerController* PC = Cast<ASGPlayerController>(GetController());
 		DisableInput(PC);  // 禁止输入事件
@@ -132,6 +101,16 @@ FVector ASGCharacterBase::GetPawnViewLocation() const
 FVector ASGCharacterBase::GetCameraForwardVector() const
 {
 	return CameraComp->GetForwardVector();
+}
+
+void ASGCharacterBase::SetSpringArmLength(float LengthValue)
+{
+	SpringArmComp->TargetArmLength = LengthValue;
+}
+
+void ASGCharacterBase::SetFieldOfView(float View)
+{
+	CameraComp->FieldOfView = View;
 }
 
 void ASGCharacterBase::Tick(float DeltaTime)
@@ -238,10 +217,6 @@ void ASGCharacterBase::PrimaryInteract()
 
 void ASGCharacterBase::PrimaryFire()
 {
-	/*if (WeaponComp->CurrentWeapon != nullptr && bEquipWeapon)
-	{
-		WeaponComp->StartFireAction(this);
-	}*/
 	if (WeaponComp->CurrentWeapon != nullptr && bEquipWeapon)
 	{
 		ActionComp->StartActionByName(this, "Fire");
@@ -250,10 +225,6 @@ void ASGCharacterBase::PrimaryFire()
 
 void ASGCharacterBase::StopFire()
 {
-	/*if (bEquipWeapon && WeaponComp->CurrentWeapon != nullptr)
-	{
-		WeaponComp->StopFireAction(this);
-	}*/
 	if (WeaponComp->CurrentWeapon != nullptr && bEquipWeapon)
 	{
 		ActionComp->StopActionByName(this, "Fire");
@@ -263,11 +234,13 @@ void ASGCharacterBase::StopFire()
 void ASGCharacterBase::AimingActionStart_Implementation()
 {
 	// 蓝图
+	ActionComp->StartActionByName(this, "Aiming");
 }
 
 void ASGCharacterBase::AimingActionStop_Implementation()
 {
 	// 蓝图
+	ActionComp->StopActionByName(this, "Aiming");
 }
 
 void ASGCharacterBase::SwitchWeaponAction_Implementation()
@@ -361,4 +334,12 @@ void ASGCharacterBase::TakeDirectDamage_Implementation(APawn* InstigatorPawn, co
 	}
 	AttributeComp->ApplyHealthChange(InstigatorPawn, -Damage * DamageThresholdScale);
 }
+
+void ASGCharacterBase::StopActionsFeedBack()
+{
+	StopFire();  // 停止开火 - 防止出现连发枪支继续开火的Bug
+	AimingActionStop_Implementation();  // 停止瞄准
+}
+
+
 

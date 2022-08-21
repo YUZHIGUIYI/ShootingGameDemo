@@ -47,7 +47,7 @@ public:
 	UFUNCTION()
 	void StartFireDelay_Elapsed(ASGCharacterBase* InstigatorCharacter);
 
-	void StopFireAction();
+	void StopFireAction(AActor* Instigator);
 
 	void SpawnEmptyAmmo(FActorSpawnParameters& SpawnParams);
 

@@ -38,6 +38,12 @@ protected:
 
 	UPROPERTY()
 	UUserWidget* MissionUIInstance;  // 任务UI实例
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> AimingWidgetClass;
+
+	UPROPERTY()
+	UUserWidget* AimingWidgetInstance;
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnPawnChanged OnPawnChanged;
@@ -74,4 +80,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ToggleMissionSettlementWidget();  // 任务结算
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleAimingWidget();
 };

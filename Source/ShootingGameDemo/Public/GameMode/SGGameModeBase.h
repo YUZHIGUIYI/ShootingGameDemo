@@ -64,6 +64,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AI Information")
 	int32 CreditsPerKill;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Mission")
+	int32 ScorePerKill;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Mission")
 	int32 RequiredNumOfKills;
 

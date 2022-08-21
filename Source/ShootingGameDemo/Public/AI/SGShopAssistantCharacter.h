@@ -8,6 +8,7 @@
 #include "SGShopAssistantCharacter.generated.h"
 
 class UCameraComponent;
+class ASGSmartObject;
 
 UCLASS()
 class SHOOTINGGAMEDEMO_API ASGShopAssistantCharacter : public ACharacter, public ISGGameplayInterface
@@ -18,6 +19,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* CameraComp;
+
+	UPROPERTY(EditAnywhere)
+	ASGSmartObject* SmartObject;
 	
 public:
 	
@@ -32,5 +36,6 @@ public:
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
 	virtual FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
-	
+
+	ASGSmartObject* GetSmartObject() const;
 };

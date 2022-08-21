@@ -41,7 +41,7 @@ ASGAmmo::ASGAmmo()
 
 	AmmoType = EAmmoType::Sniper_ammo;
 
-	//InitialLifeSpan = 2.0f;
+	InitialLifeSpan = 7.0f;
 }
 
 void ASGAmmo::BeginPlay()
@@ -80,7 +80,11 @@ void ASGAmmo::OnAmmoStop(const FHitResult& ImpactResult)
 			}
 		}
 	}
-	Destroy();
+	
+	if (GetLifeSpan() > 0.2f)
+	{
+		Destroy();
+	}
 }
 
 void ASGAmmo::SpawnEmitterAtLocation(const FHitResult& ImpactResult)

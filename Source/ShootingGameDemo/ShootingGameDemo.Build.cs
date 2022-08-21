@@ -13,7 +13,7 @@ public class ShootingGameDemo : ModuleRules
 			"Core", "CoreUObject", "Engine", "InputCore",
 			"AIModule", "GameplayAbilities", "UMG", "GameplayTasks",
 			"GameplayTags", "OnlineSubsystem", "DeveloperSettings",
-			"PhysicsCore"
+			"PhysicsCore", "NavigationSystem"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]

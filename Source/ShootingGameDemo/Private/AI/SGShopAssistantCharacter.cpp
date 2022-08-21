@@ -2,8 +2,8 @@
 
 
 #include "AI/SGShopAssistantCharacter.h"
-
 #include "AI/SGShopAssistantController.h"
+#include "AI/SGSmartObject.h"
 #include "Camera/CameraComponent.h"
 
 #define LOCTEXT_NAMESPACE "InteractableActors"
@@ -45,6 +45,11 @@ void ASGShopAssistantCharacter::Interact_Implementation(APawn* InstigatorPawn)
 FText ASGShopAssistantCharacter::GetInteractText_Implementation(APawn* InstigatorPawn)
 {
 	return LOCTEXT("Shop Message: ", "Consume credits in exanchange for weapons, ammo and medical kits.");
+}
+
+ASGSmartObject* ASGShopAssistantCharacter::GetSmartObject() const
+{
+	return SmartObject;
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -56,10 +56,15 @@ void USGAction_Fire::StartAction_Implementation(AActor* Instigator)
 	}
 }
 
-void USGAction_Fire::StopFireAction()
+void USGAction_Fire::StopFireAction(AActor* Instigator)
 {
 	if (CurrentWeapon->WeaponType == EWepaonType::Rifle && CurrentWeapon->PrimaryClipAmmo > 0)
 	{
+		const ASGCharacterBase* InstigatorCharacter = Cast<ASGCharacterBase>(Instigator);
+		if (InstigatorCharacter)
+		{
+			InstigatorCharacter->OnShowHitMarkStatus.Broadcast(false, CurrentWeapon);
+		}
 		GetWorld()->GetTimerManager().ClearTimer(TimerHandle_FireDelay);
 	}
 }
@@ -82,9 +87,11 @@ void USGAction_Fire::StartFireDelay_Elapsed(ASGCharacterBase* InstigatorCharacte
 	if (CurrentWeapon->ShootingType == EShootingType::Running)
 	{
 		InstigatorCharacter->PlayAnimMontage(FireMontageNormal);   // 持连发枪支开火动画蒙太奇
+		InstigatorCharacter->OnShowHitMarkStatus.Broadcast(true, CurrentWeapon);  // Rifle显示命中标志，仅在开火时出现
 	} else
 	{
 		InstigatorCharacter->PlayAnimMontage(FireMontageViolent);  // 持单发枪支开火动画蒙太奇
+		//InstigatorCharacter->OnShowHitMarkStatus.Broadcast(false, CurrentWeapon);  // 非Rifle不显示命中标志，完全不需要
 	}
 
 	InstigatorCharacter->BeginRecoil();  // 后座力
@@ -165,7 +172,7 @@ void USGAction_Fire::SpawnEmptyAmmo(FActorSpawnParameters& SpawnParams)
 
 void USGAction_Fire::StopAction_Implementation(AActor* Instigator)
 {
-	StopFireAction();  // 如果是连发武器，则清除定时器句柄
+	StopFireAction(Instigator);  // 如果是连发武器，则清除定时器句柄
 	
 	Super::StopAction_Implementation(Instigator);
 }

@@ -29,7 +29,6 @@ ASGRocketAmmo::ASGRocketAmmo()
 	HitObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
 
 	ActorsToIgnore.Add(this);
-	
 }
 
 void ASGRocketAmmo::PostInitializeComponents()
@@ -76,7 +75,10 @@ void ASGRocketAmmo::OnAmmoStop(const FHitResult& ImpactResult)
 		SpawnParams.Instigator = GetInstigator();
 		GetWorld()->SpawnActor<AActor>(ExplosiveEffect, SpawnTM, SpawnParams);
 	}
-	Destroy();
+	if (GetLifeSpan() > 0.2f)
+	{
+		Destroy();
+	}
 }
 
 void ASGRocketAmmo::SpawnEmitterAtLocation(const FHitResult& ImpactResult)

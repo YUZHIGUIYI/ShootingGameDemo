@@ -3,6 +3,7 @@
 
 #include "ShootingGameDemo/Public/Player/SGPlayerController.h"
 #include "Blueprint/UserWidget.h"
+#include "Character/SGCharacterBase.h"
 #include "Kismet/GameplayStatics.h"
 
 void ASGPlayerController::SetupInputComponent()
@@ -108,6 +109,11 @@ void ASGPlayerController::ToggleMissionSettlementWidget()
 		MissionUIInstance->RemoveFromParent();
 		MissionUIInstance = nullptr;
 
+		ASGCharacterBase* ControlledCharacter = Cast<ASGCharacterBase>(GetPawn());
+		if (ControlledCharacter)
+		{
+			ControlledCharacter->StopActionsFeedBack();
+		}
 		GetPawn()->EnableInput(this);
 		bShowMouseCursor = false;
 		SetInputMode(FInputModeGameOnly());
@@ -125,6 +131,22 @@ void ASGPlayerController::ToggleMissionSettlementWidget()
 		SetInputMode(FInputModeUIOnly());
 
 		UE_LOG(LogTemp, Log, TEXT("Mission Completed!"));
+	}
+}
+
+void ASGPlayerController::ToggleAimingWidget()
+{
+	if (AimingWidgetInstance && AimingWidgetInstance->IsInViewport())
+	{
+		AimingWidgetInstance->RemoveFromParent();
+		AimingWidgetInstance = nullptr;
+		return;
+	}
+
+	AimingWidgetInstance = CreateWidget<UUserWidget>(this, AimingWidgetClass);
+	if (AimingWidgetInstance)
+	{
+		AimingWidgetInstance->AddToViewport(55);
 	}
 }
 

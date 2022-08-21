@@ -6,27 +6,36 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "SGGameMissionSubsystem.generated.h"
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMissionChanged, int32, NewScore, int32, NewNumOfKills);
+
 UCLASS(meta = (DisplayName = "GameMission Subsystem"), Blueprintable)
 class SHOOTINGGAMEDEMO_API USGGameMissionSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
+protected:
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 Score;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 NumOfKills;
+	
+public:
+	
+	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
+	
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+
+	virtual void Deinitialize() override;
 
 public:
 
-	void Initialize(FSubsystemCollectionBase& Collection) override;
+	UFUNCTION(BlueprintCallable)
+	void AddScore(int32 Delta);
 
-	void Deinitialize() override;
+	UFUNCTION(BlueprintCallable)
+	void AddNumOfKills(int32 Delta);
 
-	void HandleMissionBegin(AController* NewPlayer);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "GameMission")
-	void CreateMissionTipInterface(AController* NewPlayer);
-
-	void HandleMissionEnd(AController* NewPlayer);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "GameMission")
-	void CreateMissionSettlementInterface(AController* NewPlayer);
+	UPROPERTY(BlueprintAssignable)
+	FMissionChanged OnMissionChanged;
 };

@@ -3,14 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystemInterface.h"
 #include "SGAttributeSet.h"
 #include "Abilities/GameplayAbility.h"
 #include "GameFramework/Character.h"
 #include "Interface/SGDamageInterface.h"
 #include "SGCharacterBase.generated.h"
 
-class UAbilitySystemComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class USGInteractionComponent;
@@ -23,7 +21,7 @@ class USGBackpackComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnShowEquipmentStatus, bool, bEquipWeapon, ASGWeaponBase*, Weapon);
 
 UCLASS()
-class SHOOTINGGAMEDEMO_API ASGCharacterBase : public ACharacter, public IAbilitySystemInterface, public ISGDamageInterface
+class SHOOTINGGAMEDEMO_API ASGCharacterBase : public ACharacter, public ISGDamageInterface
 {
 	GENERATED_BODY()
 
@@ -71,29 +69,24 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AnimMontage")
 	UAnimMontage* ReplaceClipMontage;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AbilitySystemComponent")
-	UAbilitySystemComponent* AbilitySystemComp;
 
 	// 声明Ability数组
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CharacterAbilities")
 	TArray<TSubclassOf<UGameplayAbility>> CharacterAbilities;
-
-	UPROPERTY(BlueprintReadOnly, Category = "CharacterAttributes")
-	USGAttributeSet* AttributeSet;
 
 	UPROPERTY(BlueprintReadWrite, Category = "CharacterAttributes")
 	bool bEquipWeapon;
 
 	UPROPERTY(BlueprintAssignable, Category = "CharacterAttributes")
 	FOnShowEquipmentStatus OnShowEquipmentStatus;
+
+	UPROPERTY(BlueprintAssignable, Category = "CharacterAttributes")
+	FOnShowEquipmentStatus OnShowHitMarkStatus;
 	
 public:
 	
 	// Sets default values for this character's properties
 	ASGCharacterBase();
-
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	UFUNCTION(BlueprintCallable, Category = "BaseCharacter")
 	void ChangeActionMode();
@@ -184,6 +177,10 @@ public:
 	virtual FVector GetPawnViewLocation() const override;  // @fix change from protected to public?
 
 	FVector GetCameraForwardVector() const;
+
+	void SetSpringArmLength(float LengthValue = 300.0f);
+
+	void SetFieldOfView(float View = 90.0f);
 	
 	virtual void Tick(float DeltaTime) override;
 	
@@ -191,4 +188,5 @@ public:
 
 	virtual void TakeDirectDamage_Implementation(APawn* InstigatorPawn, const FHitResult& ImpactResult, float Damage) override;
 
+	void StopActionsFeedBack();
 };
